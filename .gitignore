@@ -1,0 +1,15 @@
+# OS / editor
+.DS_Store
+Thumbs.db
+.idea/
+.vscode/
+.zed/
+*.log
+
+# Local tooling (Composer PHAR, etc.)
+.tools/
+
+# Environment files (also ignored per-app)
+.env
+.env.backup
+.env.*.local
