@@ -1,13 +1,13 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { getSessionCookie } from 'better-auth/cookies'
 
-export async function proxy(req: NextRequest) {
+export async function middleware(req: NextRequest) {
   const sessionCookie = getSessionCookie(req)
   const { pathname } = req.nextUrl
   const isAuthPage = pathname.startsWith('/auth')
   const isAuthenticated = !!sessionCookie
 
-  if (pathname === '/' && !isAuthenticated) {
+  if (!isAuthenticated && !isAuthPage) {
     return NextResponse.redirect(new URL('/auth/login', req.url))
   }
 
@@ -19,5 +19,5 @@ export async function proxy(req: NextRequest) {
 }
 
 export const config = {
-  matcher: ['/', '/auth/:path*'],
+  matcher: ['/((?!api|_next/static|_next/image|favicon.ico).*)'],
 }

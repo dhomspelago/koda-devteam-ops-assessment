@@ -1,10 +1,10 @@
 import DashboardLayout from '@/layout/dashboard-layout'
-import { UsersPage } from '@/components/pages/users/users-page'
+import { ProjectsPage } from '@/components/pages/projects/projects-page'
 
 export default function Page() {
   return (
     <DashboardLayout>
-      <UsersPage />
+      <ProjectsPage />
     </DashboardLayout>
   )
 }

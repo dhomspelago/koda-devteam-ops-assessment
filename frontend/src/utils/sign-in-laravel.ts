@@ -6,7 +6,7 @@ export async function signInWithLaravel(
   credentials: LoginCredentials,
 ): Promise<SignInLaravelResult> {
   const { data } = await authApi.post<SignInLaravelResult>(
-    '/sign-in/laravel',
+    '/login',
     credentials,
   )
 

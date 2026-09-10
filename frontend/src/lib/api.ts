@@ -24,6 +24,30 @@ api.interceptors.request.use(async (config) => {
   return config
 })
 
+let isHandlingUnauthorized = false
+
+api.interceptors.response.use(
+  (response) => response,
+  async (error) => {
+    if (
+      axios.isAxiosError(error) &&
+      error.response?.status === 401 &&
+      typeof window !== 'undefined' &&
+      !window.location.pathname.startsWith('/auth') &&
+      !isHandlingUnauthorized
+    ) {
+      isHandlingUnauthorized = true
+      try {
+        await authClient.signOut()
+      } finally {
+        window.location.href = '/auth/login'
+      }
+    }
+
+    return Promise.reject(error)
+  },
+)
+
 /** Better Auth route client (`/api/auth`). */
 export const authApi: AxiosInstance = axios.create({
   baseURL: '/api/auth',

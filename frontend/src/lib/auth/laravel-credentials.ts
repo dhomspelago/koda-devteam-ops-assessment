@@ -11,7 +11,7 @@ export function laravelCredentials(): BetterAuthPlugin {
     id: 'laravel-credentials',
     endpoints: {
       signInLaravel: createAuthEndpoint(
-        '/sign-in/laravel',
+        '/login',
         {
           method: 'POST',
           body: z.object({

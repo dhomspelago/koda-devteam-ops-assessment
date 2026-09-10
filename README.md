@@ -1,6 +1,6 @@
 # Koda Devteam Ops Assessment
 
-Monorepo with a Laravel JSON API (`backend/`) and a React SPA (`frontend/`). Laravel does not serve the UI — the SPA is the only frontend.
+Monorepo with a Laravel JSON API (`backend/`) and a Next.js frontend (`frontend/`). Laravel does not serve the UI — the Next.js app is the only frontend.
 
 ## Structure
 
@@ -8,7 +8,7 @@ Monorepo with a Laravel JSON API (`backend/`) and a React SPA (`frontend/`). Lar
 koda-devteam-ops-assessment/
   README.md
   backend/     Laravel API (Docker: nginx + php-fpm + MySQL, Pest, /api/v1)
-  frontend/    Vite + React + TypeScript + Tailwind
+  frontend/    Next.js + React + TypeScript + Tailwind
 ```
 
 ## Prerequisites
@@ -43,14 +43,18 @@ Useful Make targets: `make logs`, `make shell`, `make migrate`, `make test`, `ma
 
 `DB_HOST=mysql` is correct inside Compose. If you run PHP on the host against the published MySQL port, use `DB_HOST=127.0.0.1`.
 
-### Default user
+### Default users
 
-After seeding:
+After seeding (`php artisan db:seed`):
 
-| Field | Value |
-|-------|-------|
-| Email | `admin@example.com` |
-| Password | `password` |
+| Email | Name | Password |
+|-------|------|----------|
+| `admin@example.com` | Admin | `password` |
+| `test1@example.com` … `test5@example.com` | Test User 1–5 | `password` |
+
+Seeding also inserts **12 sample projects** (Acme Corporation, GreenLeaf Cafe, etc.) for the Projects UI.
+
+Use `admin@example.com` / `password` for local login.
 
 ### Auth examples
 
@@ -74,7 +78,7 @@ curl -s -X POST http://localhost:8000/api/v1/logout \
 
 Protected Users CRUD lives under `/api/v1/users` (requires the bearer token).
 
-### Frontend (SPA)
+### Frontend (Next.js)
 
 ```bash
 cd frontend
@@ -83,16 +87,18 @@ cp .env.example .env
 npm run dev
 ```
 
-SPA listens on [http://localhost:5173](http://localhost:5173).
+App listens on [http://localhost:3000](http://localhost:3000).
 
-Vite proxies `/api` to `http://127.0.0.1:8000`, so the SPA can call `/api/v1/...` without CORS during local development. Laravel CORS is also configured for `FRONTEND_URL` (default `http://localhost:5173`) when the SPA talks to the API host directly.
+Next.js rewrites `/api` to `http://127.0.0.1:8000`, so the app can call `/api/v1/...` without CORS during local development. Laravel CORS is also configured for `FRONTEND_URL` (default `http://localhost:3000`) when the frontend talks to the API host directly.
 
 ## Smoke test
 
 1. Start backend Docker (`make up`) and the frontend (`npm run dev`).
-2. Open the SPA — it fetches `/api/v1/health` and shows **API reachable** when the backend is up.
-3. Open [http://localhost:8000/docs](http://localhost:8000/docs) and try login with the default user.
-4. Or run backend tests:
+2. Open [http://localhost:3000](http://localhost:3000) and sign in with `admin@example.com` / `password`.
+3. On **Users** (`/`), confirm the seeded users list, then create / edit / delete a user.
+4. On **Projects** (`/projects`), confirm the 12 sample projects, then exercise filters, sort, pagination, and create / edit / delete.
+5. Optionally open [http://localhost:8000/docs](http://localhost:8000/docs) and try the API with the default user.
+6. Or run backend tests:
 
 ```bash
 cd backend
