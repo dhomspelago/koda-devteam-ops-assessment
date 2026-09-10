@@ -13,7 +13,7 @@ final class IndexUserController extends ApiBaseController
 {
     public function __invoke(): JsonResponse
     {
-        $users = User::query()->orderBy('id')->get();
+        $users = User::query()->get();
 
         return $this->respondOk([
             'message' => 'Users retrieved.',
