@@ -102,7 +102,7 @@ Next.js rewrites `/api` to `BACKEND_URL`, so the app can call `/api/v1/...` with
 
 ## Smoke test
 
-1. Start backend Docker (`make up`) and the frontend (`npm run dev`).
+1. Start backend Docker (`docker compose up`) and the frontend (`npm run dev`).
 2. Open [http://localhost:3000](http://localhost:3000) and sign in with `admin@example.com` / `password`.
 3. On **Users** (`/`), confirm the seeded users list, then create / edit / delete a user.
 4. On **Projects** (`/projects`), confirm the 12 sample projects, then exercise filters, sort, pagination, and create / edit / delete.
