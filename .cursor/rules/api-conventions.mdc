@@ -1,0 +1,53 @@
+---
+description: API layout, versioning, invokable controllers, and Pest tests
+globs: backend/app/**/*.php,backend/routes/**/*.php,backend/tests/**/*.php
+alwaysApply: false
+---
+
+# API conventions
+
+## Layout
+
+```
+backend/routes/api.php                          # /api/v1/...
+backend/app/Http/Controllers/Api/ApiBaseController.php
+backend/app/Http/Controllers/Api/V1/{Domain}/   # invokable, final (one action each)
+backend/app/Http/Requests/Api/V1/{Domain}/
+backend/app/Http/Resources/Api/V1/
+backend/app/Policies/                           # when authorization is needed
+backend/app/Services/{Domain}/                  # only when business logic warrants it
+backend/app/DTOs/{Domain}/                      # *Result DTOs for those services
+backend/tests/Feature/Api/V1/{Domain}/
+```
+
+New endpoints: `/api/v1/...`, named `api.v1.{domain}.{action}`. Health stays `/api/v1/health`.
+
+## Controllers
+
+Always use **invokable** single-action controllers (`final`, `__invoke` only). Do **not** use multi-method resource controllers.
+
+For simple CRUD and straightforward auth (login/logout/me), call Auth/Eloquent (and authorize via Policy when needed) inside the controller—no Service layer required:
+
+```php
+final class StoreUserController extends ApiBaseController
+{
+    public function __invoke(StoreUserRequest $request): JsonResponse
+    {
+        $user = User::query()->create([/* ... */]);
+
+        return $this->respondCreated([
+            'message' => 'User created.',
+            'data' => ['user' => UserResource::make($user)],
+        ]);
+    }
+}
+```
+
+When an action has non-trivial business logic, method-inject a service (see service-result-dto rule). Method-inject form requests; no constructor DI.
+
+- Use `respondOk` / `respondCreated` / `respondUnauthorized` / `respondForbidden` / `respondNotFound` / `respondNoContent`
+- Auth: `auth:sanctum` for protected routes
+
+## Tests
+
+Pest. `RefreshDatabase`. Hit `/api/v1/...` with `postJson` / `getJson`. Mirror `tests/Feature/Api/V1/Auth/`.
