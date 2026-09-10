@@ -7,33 +7,38 @@ Monorepo with a Laravel JSON API (`backend/`) and a React SPA (`frontend/`). Lar
 ```
 koda-devteam-ops-assessment/
   README.md
-  backend/     Laravel API (SQLite, Pest, /api/v1)
+  backend/     Laravel API (Docker: nginx + php-fpm + MySQL, Pest, /api/v1)
   frontend/    Vite + React + TypeScript + Tailwind
 ```
 
 ## Prerequisites
 
-- PHP 8.3+ (8.4 tested)
-- Composer 2.x
-- Node.js 20+
-- npm
+- Docker Desktop (backend)
+- Node.js 20+ and npm (frontend)
+- Optional on the host: PHP 8.3+ / Composer (only if you skip Docker)
 
 ## First run
 
-### Backend (API)
+### Backend (API) — Docker (recommended)
 
 ```bash
 cd backend
-composer install
 cp .env.example .env
-php artisan key:generate
-php artisan migrate
-php artisan serve
+# set APP_KEY if empty: docker compose run --rm app php artisan key:generate
+make up
+# or: docker compose up -d --build
 ```
 
-API listens on [http://127.0.0.1:8000](http://127.0.0.1:8000).
+| Service | URL / port |
+|---------|------------|
+| API (nginx) | [http://localhost:8000](http://localhost:8000) |
+| MySQL | `localhost:3306` (`koda` / `koda` / `secret`) |
 
-Health check: [http://127.0.0.1:8000/api/v1/health](http://127.0.0.1:8000/api/v1/health)
+Health check: [http://localhost:8000/api/v1/health](http://localhost:8000/api/v1/health)
+
+Useful Make targets: `make logs`, `make shell`, `make migrate`, `make test`, `make down`, `make fresh`.
+
+`DB_HOST=mysql` is correct inside Compose. If you run PHP on the host against the published MySQL port, use `DB_HOST=127.0.0.1`.
 
 ### Frontend (SPA)
 
@@ -50,17 +55,17 @@ Vite proxies `/api` to `http://127.0.0.1:8000`, so the SPA can call `/api/v1/...
 
 ## Smoke test
 
-1. Start both servers.
+1. Start backend Docker (`make up`) and the frontend (`npm run dev`).
 2. Open the SPA — it fetches `/api/v1/health` and shows **API reachable** when the backend is up.
 3. Or run backend tests:
 
 ```bash
 cd backend
-php artisan test
+make test
 ```
 
 ## Notes
 
 - API routes are versioned under `/api/v1`.
 - Built-in Laravel health probe remains at `/up`.
-- Auth, domain models, Docker, and CI are intentionally out of scope for this scaffold.
+- Auth, domain models, Redis/queue workers, and CI are intentionally out of scope for this scaffold.
