@@ -48,7 +48,20 @@ docker compose exec app php artisan l5-swagger:generate
 
 Health check: [http://localhost:8000/api/v1/health](http://localhost:8000/api/v1/health)
 
-Useful Make targets: `make logs`, `make shell`, `make migrate`, `make test`, `make down`, `make fresh`.
+## Useful Commands
+
+### Container Management
+   - Start Services: ```docker compose up -d```
+   - Stop Services: ```docker compose down```
+   - Hard Reset (Clear Volumes): ```docker compose down -v```
+   - Monitor Logs: ```docker compose logs -f queue-worker```
+
+### Artisan Operations
+   - Database Migration: ```docker compose exec app php artisan migrate```
+   - Run Test Suite: ```docker compose exec app php artisan test```
+   - Clear Application Cache: ```docker compose exec app php artisan optimize:clear```
+   - Generate App Key: docker ```compose exec app php artisan key:generate```
+
 
 `DB_HOST=mysql` is correct inside Compose. If you run PHP on the host against the published MySQL port, use `DB_HOST=127.0.0.1`.
 
@@ -117,3 +130,7 @@ I used **Cursor** as an AI coding assistant where it sped up scaffolding and boi
 - Built-in Laravel health probe remains at `/up`.
 - OpenAPI docs use LenTraq-style annotations under `backend/app/Swagger/` (UI at `/docs`).
 - Auth uses Laravel Sanctum personal access tokens on the API; the UI session is Better Auth (no Better Auth DB).
+
+
+## APP DEMO
+https://www.awesomescreenshot.com/video/56382407?key=5025e77c0ea788da0b8fe07261d13f6e
